@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+  <mapper namespace="org.hostel.dao.DormitoryDao">
+  
+  	<resultMap type="Dormitory" id="DormitoryResult">
+  		<id property="dirmitoryId" column="dormitory_id"/>
+  		<result property="dormitoryNumber" column="dormitory_number"/>
+  		<result property="totals" column="totals"/>
+  		<result property="active" column="active"/>
+    	<association property="building" javaType="Building">
+  			<id property="buildingId" column="building_id"/>
+	  		<result property="buildingName" column="building_name"/>
+	  		<result property="floors" column="floors"/>
+	  		<result property="rooms" column="rooms"/>
+	  		<result property="lives" column="lives"/>
+	  		<result property="createTime" column="create_time"/>
+	  		<result property="active" column="building_active"/>
+  		</association>
+   		<collection property="students" ofType="Student">
+  			<id property="stuId" column="stu_id"/>
+	  		<result property="stuNumber" column="stu_number"/>
+	  		<result property="name" column="name"/>
+	  		<result property="sex" column="sex"/>
+	  		<result property="phone" column="phone"/>
+	  		<result property="major" column="major"/>
+	  		<result property="classNum" column="class_num"/>
+	  		<result property="year" column="year"/>
+	  		<result property="createTime" column="student_createTime"/>
+	  		<result property="active" column="student_active"/>
+  		</collection>
+  	</resultMap>
+  
+  	<insert id="saveDormitory">
+  		insert ignore into dormitory(dormitory_number,building_id) values(#{dormitoryNumber},#{buildingId})
+  	</insert>
+  	
+  	<update id="deleteDormitory">
+  		update dormitory set active=false where dormitory_id=#{dormitoryId}
+  	</update>
+  	
+  	<select id="findDormitoryNumber" resultType="Integer">
+  		select count(*) from dormitory D where D.active=true and D.dormitory_number=#{dormitoryNumber}
+  	</select>
+  	
+  	<select id="queryAllDormitory" resultType="Dormitory">
+  		select dormitory_id,dormitory_number,totals,active from dormitory 
+  		where active=true order by #{order} limit #{start},#{pageSize}
+  	</select>
+  	
+  	<select id="getById" resultMap="DormitoryResult">
+  		select 
+  			D.dormitory_id,
+  			D.dormitory_number,
+  			D.totals,
+  			D.active,
+  			B.building_id,
+  			B.building_name,
+  			B.floors,
+  			B.rooms,
+  			B.lives,
+  			B.create_time,
+  			B.active as building_active,
+  			S.stu_number,
+  			S.name,
+  			S.sex,
+  			S.phone,
+  			S.major,
+  			S.class_num,
+  			S.year,
+  			S.create_time as student_createTime,
+  			S.active as student_active 
+  		from dormitory D 
+  			left join building B on B.building_id=D.building_id 
+  			left join student S on S.active=true and S.dormitory_id=D.dormitory_id 
+  		where D.dormitory_id=#{dormitoryId} and D.active=true
+  	</select>
+  	
+  	<!-- <select id="getById" resultMap="DormitoryResult">
+  		select 
+  			D.dormitory_id,
+  			D.dormitory_number,
+  			D.totals,
+  			D.active,
+  			B.building_id "building.building_id",
+  			B.building_name "building.building_name",
+  			B.floors "building.floors",
+  			B.rooms "building.rooms",
+  			B.lives "building.lives",
+  			B.create_time "building.create_time",
+  			B.active "building.active",
+  			S.stu_id "student.stu_id",
+  			S.stu_number "student.stu_number",
+  			S.name "student.name",
+  			S.sex "student.sex",
+  			S.phone "student.phone",
+  			S.major "student.major",
+  			S.class_num "student.class_num",
+  			S.year "student.year",
+  			S.create_time "student.create_time" 
+  		from dormitory D 
+  			left join building B on D.building_id=B.building_id 
+  			left join student S on S.active=true and S.dormitory_id=#{dormitoryId} 
+  		where D.dormitory_id=#{dormitoryId} and D.active=true
+  	</select> -->
+  </mapper>

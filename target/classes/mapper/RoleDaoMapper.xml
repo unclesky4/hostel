@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.hostel.dao.RoleDao">
+
+	<resultMap type="Role" id="RoleList">
+		<id property="roleId" column="role_id"/>
+		<result property="symbol" column="symbol"/>
+		<result property="description" column="description"/>
+		<collection property="users" ofType="User">
+			<id property="userId" column="user_id"/>
+			<result property="userName" column="user_name"/>
+			<result property="userPwd" column="user_pwd"/>
+			<result property="userSex" column="user_sex"/>
+			<result property="userPhone" column="user_phone"/>
+			<result property="createTime" column="create_time"/>
+			<result property="active" column="active"/>
+			<result property="userState" column="user_state"/>
+		</collection>
+	</resultMap>
+
+	<select id="queryAllRole" resultMap="RoleList">
+		select 
+			R.role_id as role_id,
+			R.symbol as symbol,
+			R.description as description,
+			U.user_id as user_id,
+			U.user_name as user_name,
+			U.user_pwd as user_pwd,
+			U.user_sex as user_sex,
+			U.user_phone as user_phone,
+			U.create_time as create_time,
+			U.active as active,
+			U.user_state as user_state
+		from role R 
+			left join User U on R.role_id=U.role_id and U.active=true
+	</select>
+	
+	<select id="getById" resultMap="RoleList">
+		select 
+			R.role_id as role_id,
+			R.symbol as symbol,
+			R.description as description,
+			U.user_id as user_id,
+			U.user_name as user_name,
+			U.user_pwd as user_pwd,
+			U.user_sex as user_sex,
+			U.user_phone as user_phone,
+			U.create_time as create_time,
+			U.active as active,
+			U.user_state as user_state
+		from role R 
+			left join User U on R.role_id=U.role_id  and U.active=true
+		where R.role_id=#{roleId}
+	</select>
+
+</mapper>

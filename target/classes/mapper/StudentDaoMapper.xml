@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.hostel.dao.StudentDao">
+
+	<resultMap type="Student" id="StudentResult">
+		<id property="stuId" column="stu_id"/>
+  		<result property="stuNumber" column="stu_number"/>
+  		<result property="name" column="name"/>
+  		<result property="phone" column="phone"/>
+  		<result property="sex" column="sex"/>
+  		<result property="major" column="major"/>
+  		<result property="classNum" column="class_num"/>
+  		<result property="active" column="stu_active"/>
+  		<association property="dormitory" javaType="Dormitory">
+  			<id property="dirmitoryId" column="dormitory_id"/>
+	  		<result property="dormitoryNumber" column="dormitory_number"/>
+	  		<result property="totals" column="totals"/>
+	  		<result property="active" column="dormitory_active"/>
+  		</association>
+	</resultMap>
+
+	<insert id="saveStudent">
+		insert ignore into 
+			student(stu_number,name,phone,sex,major,year,class_num,dormitory_id) 
+		values
+			(#{stuNumber},#{name},#{phone},#{sex},#{major},#{year},#{classNum},#{dormitoryId})
+	</insert>
+	
+	<update id="updateStudent">
+		update student 
+		<set>
+			<if test="stuNumber != null">stu_number=#{stuNumber},</if>
+			<if test="name != null">name=#{name},</if>
+			<if test="phone != null">phone=#{phone},</if>
+			<if test="sex != null">sex=#{sex},</if>
+			<if test="major != null">major=#{major},</if>
+			<if test="year != null">year=#{year},</if>
+			<if test="classNum != null">class_num=#{classNum},</if>
+			<if test="dormitoryId != null">dormitory_id=#{dormitoryId}</if>
+		</set> 
+		where stu_id=#{stuId} and active=true
+	</update>
+	
+	<update id="deleteStudent">
+		update student set active=false where stu_id=#{stuId}
+	</update>
+	
+	<select id="getById" resultMap="StudentResult">
+		select 
+			S.stu_id,
+			S.stu_number,
+			S.name,
+			S.phone,
+			S.sex,
+			S.major,
+			S.year,
+			S.class_num,
+			S.active as stu_active,
+			D.dormitory_id,
+			D.dormitory_number,
+			D.totals,
+			D.active as dormitory_active 
+		from student S 
+			left join dormitory D on S.dormitory_id=D.dormitory_id and D.active=true 
+		where stu_id=#{stuId} and S.active=true
+	</select>
+	
+	<select id="getByStuNumber" resultMap="StudentResult">
+		select 
+			S.stu_id,
+			S.stu_number,
+			S.name,
+			S.phone,
+			S.sex,
+			S.major,
+			S.year,
+			S.class_num,
+			S.active as stu_active,
+			D.dormitory_id,
+			D.dormitory_number,
+			D.totals,
+			D.active as dormitory_active 
+		from student S 
+			left join dormitory D on S.dormitory_id=D.dormitory_id and D.active=true 
+		where stu_number=#{stuNumber} and S.active=true
+	</select>
+	
+	<select id="queryByDormitoryId" resultMap="StudentResult">
+		select 
+			S.stu_id,
+			S.stu_number,
+			S.name,
+			S.phone,
+			S.sex,
+			S.major,
+			S.year,
+			S.class_num,
+			S.active as stu_active,
+			D.dormitory_id,
+			D.dormitory_number,
+			D.totals,
+			D.active as dormitory_active 
+		from student S 
+			left join dormitory D on S.dormitory_id=D.dormitory_id and D.active=true 
+		where S.active=true and S.dormitory_id=#{dormitoryId}
+	</select>
+</mapper>
