@@ -13,7 +13,7 @@ public class Role {
 	
 	private Integer roleId;
 	
-	private String symbol;
+	private String symbol;  //对应RoleEnum的symbol字段
 	
 	private String description;
 	

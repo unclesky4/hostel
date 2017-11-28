@@ -39,7 +39,9 @@ public class UserServiceImpl implements UserService {
 				throw new ValueDuplicateException("用户名已存在");
 			}
 			//密码加密
-			userPwd = MD5Util.Encrypt(userPwd);
+			if(userPwd != null && userPwd != null) {
+				userPwd = MD5Util.Encrypt(userPwd);
+			}
 			return userDaoMapper.saveUser(userName, userPwd, userSex, userPhone, roleId);
 		} catch (ValueDuplicateException e) {
 			logger.error(e.getMessage(),e);
@@ -77,6 +79,7 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	public User login(String username, String pwd) {
+		pwd = MD5Util.Encrypt(pwd);
 		return userDaoMapper.login(username, pwd);
 	}
 

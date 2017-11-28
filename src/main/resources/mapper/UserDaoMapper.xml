@@ -29,7 +29,7 @@
 		update User 
 		<set>
 			<if test="userName != null">user_name=#{userName},</if>
-			<if test="userPwd != null">user_pwd=#{userpwd},</if>
+			<if test="userPwd != null">user_pwd=#{userPwd},</if>
 			<if test="userSex != null">user_sex=#{userSex},</if>
 			<if test="userPhone != null">user_phone=#{userPhone},</if>
 			<if test="userState != null">user_state=#{userState},</if>

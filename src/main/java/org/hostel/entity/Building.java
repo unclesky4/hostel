@@ -14,6 +14,7 @@ public class Building {
 	
 	private Integer buildingId;
 	
+	//名称
 	private String buildingName;
 	
 	//多少层
@@ -27,6 +28,7 @@ public class Building {
 	
 	private Date createTime;
 	
+	//是否软删除 true：否
 	private boolean active;
 	
 	private List<Dormitory> dormitories;
