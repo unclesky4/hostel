@@ -42,7 +42,7 @@ public interface StudentDao {
 	 * @param dormitoryId - 宿舍主键
 	 * @return
 	 */
-	int updateStudent(@Param("stuId")Integer stuId,@Param("stuNumber")Integer stuNumber, @Param("name")String name, @Param("phone")String phone,@Param("sex")Integer sex,
+	int updateStudent(@Param("stuId")Long stuId,@Param("stuNumber")Integer stuNumber, @Param("name")String name, @Param("phone")String phone,@Param("sex")Integer sex,
 			@Param("major") String major,@Param("year")Integer year,@Param("classNum")Integer classNum, @Param("dormitoryId")Integer dormitoryId);
 	
 	
@@ -51,14 +51,14 @@ public interface StudentDao {
 	 * @param stuId - 学生主键
 	 * @return
 	 */
-	int deleteStudent(@Param("stuId")Integer stuId);
+	int deleteStudent(@Param("stuId")Long stuId);
 	
 	/**
 	 * 通过主键查询学生
 	 * @param stuId - 学生主键
 	 * @return
 	 */
-	Student getById(@Param("stuId")Integer stuId);
+	Student getById(@Param("stuId")Long stuId);
 	
 	/**
 	 * 通过学号查询学生
@@ -68,9 +68,16 @@ public interface StudentDao {
 	Student getByStuNumber(@Param("stuNumber")Integer stuNumber);
 
 	/**
-	 * 通过某个宿舍已入住学生
+	 * 查询某个宿舍已入住学生
 	 * @param dormitoryId
 	 * @return
 	 */
 	List<Student> queryByDormitoryId(@Param("dormitoryId")Integer dormitoryId);
+	
+	/**
+	 * 通过某栋宿舍楼的所有入住学生
+	 * @param bId - 宿舍楼主键
+	 * @return
+	 */
+	List<Student> queryByBuildingId(@Param("bId")Integer bId);
 }

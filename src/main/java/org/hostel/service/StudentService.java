@@ -2,7 +2,6 @@ package org.hostel.service;
 
 import java.util.List;
 
-import org.apache.ibatis.annotations.Param;
 import org.hostel.entity.Student;
 
 /**
@@ -26,8 +25,8 @@ public interface StudentService {
 	 * @param dormitoryId - 宿舍主键
 	 * @return
 	 */
-	int saveStudent(@Param("stuNumber")Integer stuNumber, @Param("name")String name, @Param("phone")String phone,@Param("sex")Integer sex,
-			@Param("major") String major,@Param("year")Integer year,@Param("classNum")Integer classNum, @Param("dormitoryId")Integer dormitoryId);
+	int saveStudent(Integer stuNumber, String name, String phone,Integer sex,
+			String major,Integer year,Integer classNum, Integer dormitoryId);
 	
 	/**
 	 * 
@@ -42,8 +41,8 @@ public interface StudentService {
 	 * @param dormitoryId - 宿舍主键
 	 * @return
 	 */
-	int updateStudent(@Param("stuId")Integer stuId,@Param("stuNumber")Integer stuNumber, @Param("name")String name, @Param("phone")String phone,@Param("sex")Integer sex,
-			@Param("major") String major,@Param("year")Integer year,@Param("classNum")Integer classNum, @Param("dormitoryId")Integer dormitoryId);
+	int updateStudent(Long stuId,Integer stuNumber, String name,String phone,Integer sex,
+			String major,Integer year,Integer classNum, Integer dormitoryId);
 	
 	
 	/**
@@ -51,26 +50,33 @@ public interface StudentService {
 	 * @param stuId - 学生主键
 	 * @return
 	 */
-	int deleteStudent(@Param("stuId")Integer stuId);
+	int deleteStudent(Long stuId);
 	
 	/**
 	 * 通过主键查询学生
 	 * @param stuId - 学生主键
 	 * @return
 	 */
-	Student getById(@Param("stuId")Integer stuId);
+	Student getById(Long stuId);
 	
 	/**
 	 * 通过学号查询学生
 	 * @param stuNumber
 	 * @return
 	 */
-	Student getByStuNumber(@Param("stuNumber")Integer stuNumber);
+	Student getByStuNumber(Integer stuNumber);
 
 	/**
 	 * 通过某个宿舍已入住学生
 	 * @param dormitoryId
 	 * @return
 	 */
-	List<Student> queryByDormitoryId(@Param("dormitoryId")Integer dormitoryId);
+	List<Student> queryByDormitoryId(Integer dormitoryId);
+	
+	/**
+	 * 通过某栋宿舍楼的所有入住学生
+	 * @param buildingId - 宿舍楼主键
+	 * @return
+	 */
+	List<Student> queryByBuildingId(Integer buildingId);
 }

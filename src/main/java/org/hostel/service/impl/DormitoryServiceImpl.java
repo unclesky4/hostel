@@ -35,10 +35,11 @@ public class DormitoryServiceImpl implements DormitoryService {
 	}
 
 	@Override
-	public Integer findDormitoryNumber(Integer dormitoryNumber) {
-		return dormitoryDao.findDormitoryNumber(dormitoryNumber);
+	public Integer findDormitoryNumber(Integer buildingId,Integer dormitoryNumber) {
+		return dormitoryDao.findDormitoryNumber(buildingId, dormitoryNumber);
 	}
 
+	//（暂时放弃该接口）
 	@Override
 	public List<Dormitory> queryAllDormitory(Integer start, Integer pageSize, String order) {
 		return dormitoryDao.queryAllDormitory(start, pageSize, order);
@@ -47,6 +48,11 @@ public class DormitoryServiceImpl implements DormitoryService {
 	@Override
 	public Dormitory getById(Integer dormitoryId) {
 		return dormitoryDao.getById(dormitoryId);
+	}
+
+	@Override
+	public Integer update(Integer dormitoryId, Integer dormitoryNumber, Integer totals, Integer buildingId) {
+		return dormitoryDao.updateDormitory(dormitoryId, dormitoryNumber, totals, buildingId);
 	}
 
 }

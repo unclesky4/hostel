@@ -44,11 +44,9 @@ public class UserServiceImpl implements UserService {
 			}
 			return userDaoMapper.saveUser(userName, userPwd, userSex, userPhone, roleId);
 		} catch (ValueDuplicateException e) {
-			logger.error(e.getMessage(),e);
+			logger.error(e.getMessage());
+			//logger.error(e.getMessage(),e);
 			throw e;
-		} catch (Exception e1) {
-			logger.error(e1.getMessage(),e1);
-			throw new RuntimeException(e1.getMessage());
 		}
 	}
 

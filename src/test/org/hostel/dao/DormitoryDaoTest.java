@@ -35,7 +35,7 @@ public class DormitoryDaoTest {
 
 	@Test
 	public void testFindDormitoryNumber() {
-		Integer aInteger= dormitoryDao.findDormitoryNumber(314);
+		Integer aInteger= dormitoryDao.findDormitoryNumber(1000,314);
 		System.out.println("------------------");
 		System.out.println(aInteger);
 	}
@@ -50,4 +50,9 @@ public class DormitoryDaoTest {
 		System.out.println(gson.toJson(dormitoryDao.getById(1000)));
 	}
 
+	@Test
+	public void testUpdate() {
+		int count = dormitoryDao.updateDormitory(1000, 301, null, null);
+		System.out.println(count);
+	}
 }

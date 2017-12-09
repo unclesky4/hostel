@@ -98,7 +98,7 @@
 
 						<div class="module">
 							<div class="module-head">
-								<h3>个人信息</h3>
+								<h3>宿舍楼</h3>
 							</div>
 							<div class="module-body">
 
@@ -140,29 +140,8 @@
 	<script src="../static/extension/DataTables-1.10.15/media/js/jquery.dataTables.min.js"></script>
 	
 	<script>
-		var data = [
-			{
-				"buildingId":1000,
-				"buildingName":"南区二栋",
-				"floors":7,
-				"rooms":15,
-				"lives":6,
-				"createTime":1508544000000,
-				"active":true,
-				"dormitories":null
-			},
-			{
-				"buildingId":1001,
-				"buildingName":"南区六栋",
-				"floors":7,"rooms":15,
-				"lives":6,
-				"createTime":1508544000000,
-				"active":true,
-				"dormitories":null
-			}
-		];
 		var table = $("#list").DataTable({
-			"lengthMenu": [20,40,70,110],  //自定义长度菜单的选项
+			"lengthMenu": [10,20,30],  //自定义长度菜单的选项
 			"serverSide": false,
 			"ajax": {
 				"url": "/hostel/building/getAll",
@@ -173,7 +152,10 @@
                 {
                     "targets": -1,
                     "render": function ( data, type, full, meta ) {
-				      	return '<a href="#">Download</a>';
+                    	var array = new Array();
+                    	array.push('<a href="#">详情</a>');
+                    	array.push('<a href="#">删除</a>');
+				      	return array.join(" ");
 				    }
                 }
 

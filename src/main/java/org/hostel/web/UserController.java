@@ -1,6 +1,9 @@
 package org.hostel.web;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -9,6 +12,7 @@ import org.hostel.dto.Result;
 import org.hostel.entity.User;
 import org.hostel.enums.RoleEnum;
 import org.hostel.exception.ValueDuplicateException;
+import org.hostel.service.RoleService;
 import org.hostel.service.UserService;
 import org.hostel.utils.DateUtil;
 import org.hostel.utils.MD5Util;
@@ -34,6 +38,9 @@ public class UserController {
 	@Autowired
 	private UserService userService;
 	
+	@Autowired
+	private RoleService roleService;
+	
 	/**
 	 * 跳转到保存用户的界面
 	 * @param session
@@ -50,11 +57,13 @@ public class UserController {
 			return "404";
 		}
 		SiderbarUtil.setSidebar(user, model);
+		model.addAttribute("roles", roleService.queryAllRole());
 		return "save_user";
 	}
 	
 	/**
 	 * 保存用户
+	 * @param session
 	 * @param userName
 	 * @param userPwd
 	 * @param userSex
@@ -62,12 +71,23 @@ public class UserController {
 	 * @param roleId
 	 * @return
 	 */
-	@RequestMapping(value="/saveUser", method = RequestMethod.POST, produces = {"application/text;charset=UTF-8"})
+	@RequestMapping(value="/saveUser", method = RequestMethod.POST, produces = {"application/json;charset=UTF-8"})
 	@ResponseBody
-	public Result<String> saveUser(String userName, String userPwd, Short userSex, String userPhone, Integer roleId) {
-	
+	public Result<String> saveUser(HttpSession session, String userName, String userPwd, Short userSex, String userPhone, Integer roleId) {
+		User user = (User) session.getAttribute("user");
 		try {
 			Result<String> result = new Result<String>();
+			//判度是否有用户登陆
+			if(user == null) {
+				result.setTime(DateUtil.getStringDate());
+				result.setData("请登陆");
+				return result;
+			}
+			if(!user.getRole().getSymbol().equals("root")) {
+				result.setTime(DateUtil.getStringDate());
+				result.setData("没有该权限");
+				return result;
+			}
 			Integer count = userService.addUser(userName, userPwd, userSex, userPhone, roleId);
 			if(count > 0) {
 				result.setTime(DateUtil.getStringDate());
@@ -86,19 +106,19 @@ public class UserController {
 	
 	/**
 	 * 更新用户信息
+	 * @param session
 	 * @param userId - 用户主键，修改自己登陆的账号时不用传
 	 * @param userPwd
 	 * @param userSex - 0：男 1：女
 	 * @param userPhone
 	 * @param userState - 0：待审核， 1:审核通过  -1：审核不通过
 	 * @param roleId - 角色主键
-	 * @param session
 	 * @return
 	 */
 	@RequestMapping(value="/{userId}/update", method = RequestMethod.POST, produces = {"application/text;charset=UTF-8" })
 	@ResponseBody
-	public String updateUser(@PathVariable("userId")Integer userId, String userPwd, Short userSex, String userPhone,
-			Short userState, Integer roleId, HttpSession session) {
+	public String updateUser(HttpSession session, @PathVariable("userId")Integer userId, String userPwd, Short userSex, String userPhone,
+			Short userState, Integer roleId) {
 		User tmp = (User) session.getAttribute("user");
 		if(userId == null) {
 			return "请登陆";
@@ -152,7 +172,7 @@ public class UserController {
 	 * @param model
 	 * @return
 	 */
-	@RequestMapping(value="password/update", method=RequestMethod.GET)
+	@RequestMapping(value="/password/update", method=RequestMethod.GET)
 	public String toUpdatePwdPage(HttpSession session, Model model) {
 		User user = (User) session.getAttribute("user");
 		if(user == null) {
@@ -226,20 +246,42 @@ public class UserController {
 	}
 	
 	/**
-	 * 查询所有用户信息
+	 * 跳转到用户列表页面
 	 * @param request
+	 * @param model
 	 * @return
 	 */
 	@RequestMapping(value="/list", method = RequestMethod.GET)
-	public String getAllUser(HttpSession session, Model model) {
+	public String toUserListPage(HttpSession session, Model model) {
 		User user = (User) session.getAttribute("user");
 		if(user == null) {
 			return "login";
 		}
-		List<User> users = userService.getAllUser();
-		model.addAttribute("data", users);
+		if(!user.getRole().getSymbol().equals("root")) {
+			return "404";
+		}
 		SiderbarUtil.setSidebar(user, model);
 		return "user_list";
+	}
+	
+	/**
+	 * 获取所有用户信息
+	 * @param session
+	 * @return
+	 */
+	@RequestMapping(value="/getAll", method=RequestMethod.POST, produces={"application/json;charset=UTF-8"})
+	@ResponseBody
+	public Map<String, List<User>> getAllUser(HttpSession session) {
+		Map<String, List<User>> map = new HashMap<String, List<User>>();
+		List<User> users = new ArrayList<User>();
+		User user = (User) session.getAttribute("user");
+		if(user == null || !user.getRole().getSymbol().equals("root")) {
+			map.put("data", users);
+			return map;
+		}
+		users = userService.getAllUser();
+		map.put("data", users);
+		return map;
 	}
 	
 	/**

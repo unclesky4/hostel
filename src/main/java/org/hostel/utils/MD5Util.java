@@ -14,7 +14,7 @@ public class MD5Util {
 	
 	public static String Encrypt(String plainText) {
 		String re_md5 = new String();
-        String text = plainText + "$5&***Ja";
+        String text = plainText + getSaltValue();
         try {
             MessageDigest md = MessageDigest.getInstance("MD5");
             md.update(text.getBytes());
@@ -38,6 +38,11 @@ public class MD5Util {
             e.printStackTrace();
         }
         return re_md5;
+	}
+	
+	//获取MD5加密的盐值
+	static String getSaltValue() {
+		return "$5&***Ja";
 	}
 
 }

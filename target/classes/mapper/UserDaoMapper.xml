@@ -65,7 +65,6 @@
 		select 
 			U.user_id as user_id,
 			U.user_name as user_name,
-			U.user_pwd as user_pwd,
 			U.user_sex as user_sex,
 			U.user_phone as user_phone,
 			U.create_time as create_time,

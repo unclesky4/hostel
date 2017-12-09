@@ -20,30 +20,48 @@ public interface DormitoryService {
 	 * @param buildingId
 	 * @return
 	 */
-	int saveDormitory(@Param("dormitoryNumber") Integer dormitoryNumber, @Param("buildingId") Integer buildingId);
+	int saveDormitory(Integer dormitoryNumber, Integer buildingId);
 	
 	/**
 	 * 删除宿舍
 	 * @param dormitoryId
 	 * @return
 	 */
-	int deleteDormitory(@Param("dormitoryId") Integer dormitoryId);
+	int deleteDormitory(Integer dormitoryId);
 	
 	/**
 	 * 用于判断宿舍门号是否存在
+	 * @param buildingId
 	 * @param dormitoryNumber
 	 * @return
 	 */
-	Integer findDormitoryNumber(@Param("dormitoryNumber") Integer dormitoryNumber);
+	Integer findDormitoryNumber(Integer buildingId, Integer dormitoryNumber);
 	
 	
-	List<Dormitory> queryAllDormitory(@Param("start") Integer start, @Param("pageSize") Integer pageSize, 
+	/**
+	 * 查询所有宿舍--服务器分页
+	 * @param start
+	 * @param pageSize
+	 * @param order
+	 * @return
+	 */
+	List<Dormitory> queryAllDormitory(Integer start, Integer pageSize, 
 			@Param("order") String order);
 	
 	/**
-	 * 通过主键查询宿舍 ---- 可以放弃该接口
+	 * 通过主键查询宿舍
 	 * @param dormitoryId
 	 * @return
 	 */
-	Dormitory getById(@Param("dormitoryId") Integer dormitoryId);
+	Dormitory getById(Integer dormitoryId);
+	
+	/**
+	 * 更新宿舍信息
+	 * @param dormitoryId - 宿舍主键
+	 * @param dormitoryNumber - 宿舍门号
+	 * @param totals - 已住人数
+	 * @param buildingId - 宿舍楼主键
+	 * @return
+	 */
+	Integer update(Integer dormitoryId, Integer dormitoryNumber,Integer totals,Integer buildingId);
 }

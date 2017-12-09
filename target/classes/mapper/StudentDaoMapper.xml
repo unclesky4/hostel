@@ -12,9 +12,10 @@
   		<result property="sex" column="sex"/>
   		<result property="major" column="major"/>
   		<result property="classNum" column="class_num"/>
+  		<result property="year" column="year"/>
   		<result property="active" column="stu_active"/>
   		<association property="dormitory" javaType="Dormitory">
-  			<id property="dirmitoryId" column="dormitory_id"/>
+  			<id property="dormitoryId" column="dormitory_id"/>
 	  		<result property="dormitoryNumber" column="dormitory_number"/>
 	  		<result property="totals" column="totals"/>
 	  		<result property="active" column="dormitory_active"/>
@@ -105,5 +106,20 @@
 		from student S 
 			left join dormitory D on S.dormitory_id=D.dormitory_id and D.active=true 
 		where S.active=true and S.dormitory_id=#{dormitoryId}
+	</select>
+	
+	<select id="queryByBuildingId" resultType="Student">
+		select S.stu_id,
+			S.stu_number,
+			S.name,
+			S.sex,
+			S.phone,
+			S.major,
+			S.class_num,
+			S.year,
+			S.create_time 
+		from student S 
+			left join dormitory D on D.active=true and D.building_id=#{bId} 
+		where S.active=true and S.dormitory_id=D.dormitory_id
 	</select>
 </mapper>

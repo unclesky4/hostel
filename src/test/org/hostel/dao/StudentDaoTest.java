@@ -1,7 +1,8 @@
 package org.hostel.dao;
 
-import static org.junit.Assert.*;
+import java.util.List;
 
+import org.hostel.entity.Student;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,17 +34,17 @@ public class StudentDaoTest {
 
 	@Test
 	public void testUpdateStudent() {
-		System.out.println(studentDao.updateStudent(1002, 141110188, "黄志标", "141110188", 0, "计算机学院", 2014, 1404, null));
+		System.out.println(studentDao.updateStudent(1002L, 141110188, "黄志标", "141110188", 0, "计算机学院", 2014, 1404, null));
 	}
 
 	@Test
 	public void testDeleteStudent() {
-		System.out.println(studentDao.deleteStudent(1000));
+		System.out.println(studentDao.deleteStudent(1000L));
 	}
 
 	@Test
 	public void testGetById() {
-		System.out.println(gson.toJson(studentDao.getById(1001)));
+		System.out.println(gson.toJson(studentDao.getById(1001L)));
 	}
 
 	@Test
@@ -54,6 +55,16 @@ public class StudentDaoTest {
 	@Test
 	public void testQueryByDormitoryId() {
 		System.out.println(gson.toJson(studentDao.queryByDormitoryId(1000)));
+	}
+	
+	@Test
+	public void testQueryByBuildingId() {
+		List<Student> list = studentDao.queryByBuildingId(1000);
+		if(list==null) {
+			System.out.println("null");
+		}else{
+			System.out.println(list.size());
+		}
 	}
 
 }

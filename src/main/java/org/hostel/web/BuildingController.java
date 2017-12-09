@@ -5,7 +5,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 import org.hostel.entity.Building;
@@ -15,12 +14,10 @@ import org.hostel.utils.SiderbarUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
-
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
 
 /**
 *
@@ -70,8 +67,11 @@ public class BuildingController {
 		if(user == null) {
 			return "请登陆";
 		}
-		if(!user.getRole().getSymbol().equals("root") || !user.getRole().getSymbol().equals("administrator")) {
+		if(!user.getRole().getSymbol().equals("root") && !user.getRole().getSymbol().equals("administrator")) {
 			return "没有权限";
+		}
+		if(name==null || floors == null || rooms == null || lives == null) {
+			return "参数不匹配";
 		}
 		int count = buildingService.saveBuilding(name, floors, rooms, lives);
 		if(count > 0) {
@@ -107,11 +107,37 @@ public class BuildingController {
 	@RequestMapping(value="/getAll", method=RequestMethod.GET, produces={"application/json;charset=UTF-8"})
 	@ResponseBody
 	public Map<Object, Object> getAllBuilding(HttpSession session) {
-	    
+		Map<Object, Object> map = new HashMap<Object, Object>();
+		User user = (User) session.getAttribute("user");
+		if(user == null) {
+			map.put("data", new ArrayList<>());
+			return map;
+		}
 	    List<Building> buildings = buildingService.queryAllBuilding();
-	    Map<Object, Object> map = new HashMap<Object, Object>();
 	    map.put("data", buildings);
 	    return map;
+	}
+	
+	/**
+	 * 访问宿舍楼详细信息页面
+	 * @param session
+	 * @param buildingId
+	 * @param model
+	 * @return
+	 */
+	@RequestMapping(value="/{buildingId}/detail",method=RequestMethod.GET)
+	public String queryById(HttpSession session, @PathVariable("buildingId")Integer buildingId, Model model) {
+		User user = (User) session.getAttribute("user");
+		if(user == null) {
+			return "login";
+		}
+		Building building = buildingService.getById(buildingId);
+		model.addAttribute("data",building);
+		//根据角色的不同返回不同的页面
+		if(user.getRole().getSymbol().equals("root") || user.getRole().getSymbol().equals("administrator")) {
+			return "building_detail";
+		}
+		return "404";
 	}
 
 }

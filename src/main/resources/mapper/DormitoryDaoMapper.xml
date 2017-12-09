@@ -5,7 +5,7 @@
   <mapper namespace="org.hostel.dao.DormitoryDao">
   
   	<resultMap type="Dormitory" id="DormitoryResult">
-  		<id property="dirmitoryId" column="dormitory_id"/>
+  		<id property="dormitoryId" column="dormitory_id"/>
   		<result property="dormitoryNumber" column="dormitory_number"/>
   		<result property="totals" column="totals"/>
   		<result property="active" column="active"/>
@@ -41,7 +41,8 @@
   	</update>
   	
   	<select id="findDormitoryNumber" resultType="Integer">
-  		select count(*) from dormitory D where D.active=true and D.dormitory_number=#{dormitoryNumber}
+  		select count(*) from dormitory D where D.active=true and D.dormitory_number=#{dormitoryNumber} and 
+  			D.building_id=#{buildingId}
   	</select>
   	
   	<select id="queryAllDormitory" resultType="Dormitory">
@@ -77,31 +78,13 @@
   		where D.dormitory_id=#{dormitoryId} and D.active=true
   	</select>
   	
-  	<!-- <select id="getById" resultMap="DormitoryResult">
-  		select 
-  			D.dormitory_id,
-  			D.dormitory_number,
-  			D.totals,
-  			D.active,
-  			B.building_id "building.building_id",
-  			B.building_name "building.building_name",
-  			B.floors "building.floors",
-  			B.rooms "building.rooms",
-  			B.lives "building.lives",
-  			B.create_time "building.create_time",
-  			B.active "building.active",
-  			S.stu_id "student.stu_id",
-  			S.stu_number "student.stu_number",
-  			S.name "student.name",
-  			S.sex "student.sex",
-  			S.phone "student.phone",
-  			S.major "student.major",
-  			S.class_num "student.class_num",
-  			S.year "student.year",
-  			S.create_time "student.create_time" 
-  		from dormitory D 
-  			left join building B on D.building_id=B.building_id 
-  			left join student S on S.active=true and S.dormitory_id=#{dormitoryId} 
-  		where D.dormitory_id=#{dormitoryId} and D.active=true
-  	</select> -->
+  	<update id='updateDormitory'>
+  		update dormitory 
+  			<set>
+  				<if test="dormitoryNumber != null">dormitory_number=#{dormitoryNumber},</if>
+  				<if test="totals != null">totals=#{totals},</if>
+  				<if test="buildingId != null">building_id=#{buildingId} </if>
+  			</set>
+  		where dormitory_id=#{dormitoryId} and active=true
+  	</update>
   </mapper>

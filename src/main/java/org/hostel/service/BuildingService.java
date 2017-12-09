@@ -34,7 +34,7 @@ public interface BuildingService {
 	 * @param lives - 每间住多少人
 	 * @return - 影响的行数
 	 */
-	int saveBuilding(@Param("buildingName")String buildingName, @Param("floors")Integer floors, @Param("rooms")Integer rooms, 
+	int saveBuilding(String buildingName, Integer floors, Integer rooms, 
 			@Param("lives")Integer lives);
 	
 	/**
@@ -46,8 +46,7 @@ public interface BuildingService {
 	 * @param lives
 	 * @return
 	 */
-	int updateBuilding(@Param("buildingId")Integer buildingId, @Param("buildingName")String buildingName, @Param("floors")Integer floors, 
-			@Param("rooms")Integer rooms, @Param("lives")Integer lives);
+	int updateBuilding(Integer buildingId, String buildingName, Integer floors, Integer rooms, Integer lives);
 	
 	/**
 	 * 删除宿舍楼

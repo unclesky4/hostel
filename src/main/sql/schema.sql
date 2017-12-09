@@ -26,7 +26,7 @@ use hostel;
     
 --创建宿舍楼表
 CREATE TABLE `building`(
-`building_id` int(4) NOT NULL AUTO_INCREMENT COMMENT '宿舍楼主键',
+`building_id` int NOT NULL AUTO_INCREMENT COMMENT '宿舍楼主键',
 `building_name` varchar(10) NOT NULL COMMENT '宿舍楼名称',
 `floors` tinyint(1) NOT NULL COMMENT '层数',
 `rooms` tinyint(1) NOT NULL COMMENT '每层多少间宿舍',
@@ -45,11 +45,11 @@ values
     
 --创建宿舍表
 CREATE TABLE `dormitory`(
-`dormitory_id` int(5) NOT NULL AUTO_INCREMENT COMMENT '宿舍主键',
+`dormitory_id` int NOT NULL AUTO_INCREMENT COMMENT '宿舍主键',
 `dormitory_number` int(5) NOT NULL COMMENT '宿舍门号',
 `totals` tinyint(1) NOT NULL DEFAULT 0 COMMENT '已住人数',
 `active` boolean NOT NULL DEFAULT true COMMENT '是否显示',
-`building_id` int(4) NOT NULL COMMENT '宿舍楼外键',
+`building_id` int NOT NULL COMMENT '宿舍楼外键',
 primary key(dormitory_id),
 key idx_dormitory_active(active),
 key idx_dormitory_building(active,building_id)
@@ -63,7 +63,7 @@ values
     
 --创建角色表
 CREATE TABLE `role`(
-`role_id` int(4) NOT NULL AUTO_INCREMENT COMMENT '角色主键',
+`role_id` int NOT NULL AUTO_INCREMENT COMMENT '角色主键',
 `symbol` varchar(15) NOT NULL COMMENT '角色标识',
 `description` varchar(30) NOT NULL COMMENT '角色描述',
 primary key(role_id),
@@ -79,13 +79,13 @@ values
     
 --创建用户表
 CREATE TABLE `User`(
-`user_id` int(4) NOT NULL AUTO_INCREMENT COMMENT '用户主键',
+`user_id` int NOT NULL AUTO_INCREMENT COMMENT '用户主键',
 `user_name` varchar(10) NOT NULL COMMENT '用户名',
 `user_pwd` varchar(32) NOT NULL COMMENT '密码',
 `user_sex` tinyint(1) NOT NULL COMMENT '用户性别 0:男 1：女',
 `user_phone` varchar(11) NOT NULL COMMENT '用户手机',
 `create_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
-`active` boolean DEFAULT true COMMENT '是否显示',
+`active` boolean NOT NULL DEFAULT true COMMENT '是否显示',
 `user_state` tinyint NOT NULL DEFAULT 1 COMMENT '审核状态 0：待审核， 1:审核通过  -1：审核不通过',
 `role_id` int(5) NOT NULL COMMENT '角色外键',
 primary key(user_id),
@@ -102,17 +102,17 @@ values
     
 --创建学生表
 CREATE TABLE `student`(
-`stu_id` int(11) NOT NULL AUTO_INCREMENT COMMENT '学生主键',
+`stu_id` bigint NOT NULL AUTO_INCREMENT COMMENT '学生主键',
 `stu_number` int(10) NOT NULL COMMENT '学生学号',
 `name` varchar(10) NOT NULL COMMENT '学生名',
 `sex` tinyint(1) NOT NULL COMMENT '学生性别 0:男 1：女',
 `phone` varchar(11) NOT NULL COMMENT '学生手机',
-`major` varchar(15) NOT NULL COMMENT '专业学科',
+`major` varchar(20) NOT NULL COMMENT '专业学科',
 `class_num` int(5) NOT NULL COMMENT '班级',
 `year` int(4) NOT NULL COMMENT '入学年份',
 `create_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
-`active` boolean DEFAULT true COMMENT '是否显示',
-`dormitory_id` int(4) NOT NULL COMMENT '宿舍外键',
+`active` boolean NOT NULL DEFAULT true COMMENT '是否显示',
+`dormitory_id` int NOT NULL COMMENT '宿舍外键',
 primary key(stu_id),
 unique(stu_number),
 key idx_stuNum(stu_number),

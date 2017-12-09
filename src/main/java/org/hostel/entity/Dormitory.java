@@ -11,7 +11,7 @@ import java.util.List;
 
 public class Dormitory {
 	
-	private Integer dirmitoryId;
+	private Integer dormitoryId;
 	
 	private Integer dormitoryNumber;
 	
@@ -25,12 +25,12 @@ public class Dormitory {
 	
 	public Dormitory() {}
 
-	public Integer getDirmitoryId() {
-		return dirmitoryId;
+	public Integer getDormitoryId() {
+		return dormitoryId;
 	}
 
-	public void setDirmitoryId(Integer dirmitoryId) {
-		this.dirmitoryId = dirmitoryId;
+	public void setDormitoryId(Integer dormitoryId) {
+		this.dormitoryId = dormitoryId;
 	}
 
 	public Integer getDormitoryNumber() {

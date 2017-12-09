@@ -4,6 +4,8 @@ import java.text.ParsePosition;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import com.mysql.cj.fabric.xmlrpc.base.Data;
+
 /**
 * 日期工具类
 * @author unclesky4
@@ -34,5 +36,16 @@ public class DateUtil {
 		ParsePosition pos = new ParsePosition(8);
 		Date currentTime1 = formatter.parse(dateString, pos);
 		return currentTime1;
+	}
+	
+	/**
+	 * 获取当前的年份 
+	 * @return - Integer
+	 */
+	public static Integer getCurrentYear() {
+		Date currentTime = new Date();
+		SimpleDateFormat formatter = new SimpleDateFormat("yyyy");
+		String year = formatter.format(currentTime);
+		return Integer.parseInt(year);
 	}
 }

@@ -36,7 +36,7 @@ public class BuildingDaoTest {
 
 	@Test
 	public void testGetById() {
-		Building building = buildingDao.getById(1001);
+		Building building = buildingDao.getById(1000);
 		System.out.println(building==null);
 		System.out.println(gson.toJson(building));
 	}

@@ -14,9 +14,9 @@
   		<result property="active" column="active"/>
   		<collection property="dormitories" ofType="Dormitory">
   			<id property="dormitoryId" column="dormitory_id"/>
-	  		<result property="dormitoryNumber" column="dormitory_number"/>
-	  		<result property="totals" column="totals"/>
-	  		<result property="active" column="active"/>
+  			<result property="dormitoryNumber" column="dormitory_number"/>
+  			<result property="totals" column="totals"/>
+  			<result property="active" column="d_active"/>
   		</collection>
   	</resultMap>
   
@@ -52,7 +52,7 @@
  			D.dormitory_id,
  			D.dormitory_number,
  			D.totals,
- 			D.active 
+ 			D.active as d_active 
  		from building B 
  			left join dormitory D on D.building_id=B.building_id and D.active=true 
  		where B.building_id=#{buildingId} and B.active=true
