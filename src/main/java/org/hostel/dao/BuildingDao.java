@@ -56,5 +56,12 @@ public interface BuildingDao {
 	 * @return
 	 */
 	int deleteBuilding(Integer buildingId);
+	
+	/**
+	 * 通过宿舍楼名称查询
+	 * @param buildingName
+	 * @return
+	 */
+	Building getByName(@Param("buildingName")String buildingName);
 
 }

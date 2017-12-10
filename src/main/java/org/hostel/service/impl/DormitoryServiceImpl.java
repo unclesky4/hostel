@@ -2,7 +2,9 @@ package org.hostel.service.impl;
 
 import java.util.List;
 
+import org.hostel.dao.BuildingDao;
 import org.hostel.dao.DormitoryDao;
+import org.hostel.entity.Building;
 import org.hostel.entity.Dormitory;
 import org.hostel.service.DormitoryService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +24,9 @@ public class DormitoryServiceImpl implements DormitoryService {
 	@Autowired
 	private DormitoryDao dormitoryDao;
 	
+	@Autowired
+	private BuildingDao buildingDao;
+	
 	@Override
 	@Transactional
 	public int saveDormitory(Integer dormitoryNumber, Integer buildingId) {
@@ -30,7 +35,11 @@ public class DormitoryServiceImpl implements DormitoryService {
 
 	@Override
 	@Transactional
-	public int deleteDormitory(Integer dormitoryId) {
+	public int deleteDormitory(Integer dormitoryId) throws RuntimeException{
+		Dormitory dormitory = dormitoryDao.getById(dormitoryId);
+		if(dormitory.getStudents().size() > 0) {
+			throw new RuntimeException("不能删除该宿舍");
+		}
 		return dormitoryDao.deleteDormitory(dormitoryId);
 	}
 
@@ -51,8 +60,19 @@ public class DormitoryServiceImpl implements DormitoryService {
 	}
 
 	@Override
-	public Integer update(Integer dormitoryId, Integer dormitoryNumber, Integer totals, Integer buildingId) {
-		return dormitoryDao.updateDormitory(dormitoryId, dormitoryNumber, totals, buildingId);
+	public Integer update(Integer dormitoryId, Integer dormitoryNumber, Integer totals) throws RuntimeException{
+		Dormitory dormitory = dormitoryDao.getById(dormitoryId);
+		Building building = dormitory.getBuilding();
+		if(building == null) {
+			throw new RuntimeException("关联的宿舍楼不存在");
+		}
+		List<Dormitory> list = buildingDao.getById(building.getBuildingId()).getDormitories();
+		for(Dormitory dormitory2 : list) {
+			if(dormitory2.getDormitoryNumber() == dormitoryNumber && dormitory.getDormitoryId() != dormitory2.getDormitoryId()) {
+				throw new RuntimeException("宿舍门号不能重复");
+			}
+		}
+		return dormitoryDao.updateDormitory(dormitoryId, dormitoryNumber, totals, null);
 	}
 
 }

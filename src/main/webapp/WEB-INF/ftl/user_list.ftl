@@ -88,7 +88,6 @@
 				<div class="span3">
 					<div class="sidebar">
 						  <#include "${sidebar}"/>
-
 					</div><!--/.sidebar-->
 				</div><!--/.span3-->
 
@@ -138,6 +137,8 @@
 	<script src="../static/scripts/flot/jquery.flot.js" type="text/javascript"></script>
 	<!--<script src="https://cdn.bootcss.com/datatables/1.10.4/js/jquery.dataTables.min.js"></script>-->
 	<script src="../static/extension/DataTables-1.10.15/media/js/jquery.dataTables.min.js"></script>
+	<!--时间格式化-->
+	<script src="../static/DateUtil.js"></script>
 	
 	<script>
 		var table = $("#list").DataTable({
@@ -150,7 +151,7 @@
 			},
 			"columnDefs": [
                 {
-                    "targets": -1,
+                    "targets": 6,
                     "render": function ( data, type, full, meta ) {
                     	var array = new Array();
                     	array.push('<a href="#">详情</a>');
@@ -184,8 +185,8 @@
             		//显示格式化的时间
                 	"targets": 5,
                 	"render": function ( data, type, full, meta ) {
-                		var date = new Date(data);
-	                	return date.getFullYear() + '-' + (date.getMonth() + 1) + '-' + date.getDate();
+                		var date = new Date(full.createTime);
+	                	return dateFtt("yyyy-MM-dd",date);
 				    }
                 }
             ],
@@ -196,28 +197,9 @@
 	            { "data": "userPhone", "orderable": false},
 	            { "data": "userState", "orderable": true},
 	            { "data": "createTime", "orderable": true},
-	            { "data": null, "orderable": false, "searchable": false}
+	            { "orderable": false, "searchable": false}
 	        ]
 		});
 		
-		//时间格式化处理  dateFtt("yyyy-MM-dd hh:mm:ss",date)
-		function dateFtt(fmt,date)   
-		{
-		  var o = {   
-		    "M+" : date.getMonth()+1,                 //月份   
-		    "d+" : date.getDate(),                    //日   
-		    "h+" : date.getHours(),                   //小时   
-		    "m+" : date.getMinutes(),                 //分   
-		    "s+" : date.getSeconds(),                 //秒   
-		    "q+" : Math.floor((date.getMonth()+3)/3), //季度   
-		    "S"  : date.getMilliseconds()             //毫秒   
-		  };   
-		  if(/(y+)/.test(fmt))   
-		    fmt=fmt.replace(RegExp.$1, (date.getFullYear()+"").substr(4 - RegExp.$1.length));   
-		  for(var k in o)   
-		    if(new RegExp("("+ k +")").test(fmt))   
-		  fmt = fmt.replace(RegExp.$1, (RegExp.$1.length==1) ? (o[k]) : (("00"+ o[k]).substr((""+ o[k]).length)));   
-		  return fmt;   
-		} 
 	</script>
 </body>

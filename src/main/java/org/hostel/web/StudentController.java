@@ -162,12 +162,13 @@ public class StudentController {
 	public String toStuDetailPage(HttpSession session, @PathVariable("stuId")Long stuId, Model model) {
 		User user = (User) session.getAttribute("user");
 		if(user == null) {
-			return "login";
+			return "redirect:/user/index";
 		}
 		Student student = studentService.getById(stuId);
 		model.addAttribute("student", student);
 		List<Building> buildings = buildingService.queryAllBuilding();
 		model.addAttribute("buildings", buildings);
+		SiderbarUtil.setSidebar(user, model);
 		
 		if(!user.getRole().getSymbol().equals("root") && !user.getRole().getSymbol().equals("administrator")) {
 			return "studentDetail";

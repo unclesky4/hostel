@@ -56,12 +56,11 @@ public interface DormitoryService {
 	Dormitory getById(Integer dormitoryId);
 	
 	/**
-	 * 更新宿舍信息
+	 * 更新宿舍信息 - 不修改宿舍楼外键
 	 * @param dormitoryId - 宿舍主键
 	 * @param dormitoryNumber - 宿舍门号
 	 * @param totals - 已住人数
-	 * @param buildingId - 宿舍楼主键
 	 * @return
 	 */
-	Integer update(Integer dormitoryId, Integer dormitoryNumber,Integer totals,Integer buildingId);
+	Integer update(Integer dormitoryId, Integer dormitoryNumber,Integer totals);
 }

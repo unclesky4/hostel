@@ -69,4 +69,22 @@
  			active 
  		from building where active=true
 	</select>
+	
+	<select id="getByName" resultMap="BuildingResult">
+ 		select 
+ 			B.building_id,
+ 			B.building_name,
+ 			B.floors,
+ 			B.rooms,
+ 			B.lives,
+ 			B.create_time,
+ 			B.active,
+ 			D.dormitory_id,
+ 			D.dormitory_number,
+ 			D.totals,
+ 			D.active as d_active 
+ 		from building B 
+ 			left join dormitory D on D.building_id=B.building_id and D.active=true 
+ 		where B.building_name=#{buildingName} and B.active=true
+ 	</select>
   </mapper>

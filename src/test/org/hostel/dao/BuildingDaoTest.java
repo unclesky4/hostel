@@ -70,5 +70,12 @@ public class BuildingDaoTest {
 			System.out.println("删除失败");
 		}
 	}
+	
+	@Test
+	public void testGetByName() {
+		Building building = buildingDao.getByName("南区二栋");
+		System.out.println(building==null);
+		System.out.println(gson.toJson(building));
+	}
 
 }

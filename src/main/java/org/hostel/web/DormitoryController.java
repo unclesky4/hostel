@@ -16,6 +16,7 @@ import org.hostel.utils.SiderbarUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -88,7 +89,7 @@ public class DormitoryController {
 	}
 	
 	/**
-	 * 跳转到宿舍信息页面
+	 * 跳转到宿舍列表信息页面
 	 * @param session
 	 * @param model
 	 * @return
@@ -140,6 +141,109 @@ public class DormitoryController {
 		}
 		map.put("data", dormitories);
 		return map;
+	}
+	
+	/**
+	 * 跳转到宿舍详情页
+	 * @param session
+	 * @param dId - 宿舍主键
+	 * @param model
+	 * @return
+	 */
+	@RequestMapping(value="/{dId}/detail", method=RequestMethod.GET)
+	public String toDetailPage(HttpSession session, @PathVariable("dId")Integer dId, Model model) {
+		User user = (User) session.getAttribute("user");
+		if(user == null) {
+			return "redirect:/user/index";
+		}
+		if(!user.getRole().getSymbol().equals("root") && !user.getRole().getSymbol().equals("administrator")) {
+			return "redirect:/common/404";
+		}
+		Dormitory dormitory = dormitoryService.getById(dId);
+		model.addAttribute("data", dormitory);
+		SiderbarUtil.setSidebar(user, model);
+		return "dormitory_detail";
+	}
+	
+	/**
+	 * 某个宿舍的学生列表页面
+	 * @param session
+	 * @param dId - 宿舍主键
+	 * @param model
+	 * @return
+	 */
+	@RequestMapping(value="/{dId}/students", method=RequestMethod.GET)
+	public String toListStu(HttpSession session, @PathVariable("dId")Integer dId, Model model) {
+		User user = (User) session.getAttribute("user");
+		if(user == null) {
+			return "redirect:/user/index";
+		}
+		Dormitory dormitory = dormitoryService.getById(dId);
+		model.addAttribute("data", dormitory);
+		SiderbarUtil.setSidebar(user, model);
+		return "dormitory_students";
+	}
+	
+	/**
+	 * 更新宿舍信息
+	 * @param session
+	 * @param dId
+	 * @param dNum
+	 * @param totals
+	 * @return
+	 */
+	@RequestMapping(value="/update",method=RequestMethod.POST, produces={"application/text;charset=UTF-8"})
+	@ResponseBody
+	public String update(HttpSession session, Integer dId, Integer dNum, Integer totals) {
+		User user = (User) session.getAttribute("user");
+		if(user == null) {
+			return "请登陆";
+		}
+		if(!user.getRole().getSymbol().equals("root") && !user.getRole().getSymbol().equals("administrator")) {
+			return "没有该权限";
+		}
+		if(dId == null || dNum == null || totals == null) {
+			return "参数错误";
+		}
+		try {
+			int count = dormitoryService.update(dId, dNum, totals);
+			if (count < 1) {
+				return "更新失败";
+			}
+			return "更新成功";
+		} catch (RuntimeException e) {
+			return e.getMessage();
+		}
+	}
+	
+	/**
+	 * 删除宿舍
+	 * @param session
+	 * @param dId - 宿舍主键
+	 * @return
+	 */
+	@RequestMapping(value="/{dId}/delete",method=RequestMethod.POST, produces={"application/text;charset=UTF-8"})
+	@ResponseBody
+	public String delete(HttpSession session, @PathVariable("dId")Integer dId) {
+		User user = (User) session.getAttribute("user");
+		if(user == null) {
+			return "请登陆";
+		}
+		if(!user.getRole().getSymbol().equals("root") && !user.getRole().getSymbol().equals("administrator")) {
+			return "没有该权限";
+		}
+		if(dId == null) {
+			return "参数错误";
+		}
+		try {
+			int count = dormitoryService.deleteDormitory(dId);
+			if(count < 1) {
+				return "删除失败";
+			}
+			return "删除成功";
+		} catch (RuntimeException e) {
+			return e.getMessage();
+		}
 	}
 
 }

@@ -183,7 +183,8 @@
 	            { "data": "sex", "orderable": true},
 	            { "data": "major", "orderable": true},
 	            { "data": "phone", "orderable": false},
-	            { "data": "year", "orderable": true}
+	            { "data": "year", "orderable": true},
+	            { "orderable": false, "width": "20%"}
 	        ]
 		});
 		
@@ -213,8 +214,8 @@
 	                    "targets": 7,
 	                    "render": function ( data, type, full, meta ) {
 	                    	var array = new Array();
-	                    	array.push('<a href="#">详情</a>');
-	                    	array.push('<a href="#">删除</a>');
+	                    	array.push('<a href="/hostel/student/'+full.stuId+'/detail">详情</a>');
+	                    	array.push('<a href="javascript:void(0);" onclick="remove(\''+full.stuId+'\')">删除</a>');
 					      	return array.join(" ");
 					    }
 	                },
@@ -222,7 +223,7 @@
 	            		//显示性别 0->男， 1->女
 	                	"targets": 3,
 	                	"render": function ( data, type, full, meta ) {
-		                	 if(data.sex == 0){return "男"}
+		                	 if(full.sex == 0){return "男"}
 		                	 else{return "女"}
 					    }
 	                }
@@ -234,9 +235,22 @@
 		            { "data": "sex", "orderable": true},
 		            { "data": "major", "orderable": true},
 		            { "data": "phone", "orderable": false},
-		            { "data": "year", "orderable": true}
+		            { "data": "year", "orderable": true},
+		            { "orderable": false, "width": "20%"}
 		        ]
 			});
+		}
+		
+		//删除
+		function remove(stuId) {
+			var r = confirm("确定删除?");
+			if(!r) {
+				return;
+			}
+			var url = "/hostel/student/delete";
+			$.post(url, {"stuId":stuId}, function(result) {alert(result);},"text");
+			//刷新数据
+			table.ajax.reload();
 		}
 	</script>
 </body>

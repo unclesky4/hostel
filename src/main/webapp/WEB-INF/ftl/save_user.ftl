@@ -99,7 +99,6 @@
 				<div class="span3">
 					<div class="sidebar">
 						  <#include "${sidebar}"/>
-
 					</div><!--/.sidebar-->
 				</div><!--/.span3-->
 
@@ -109,7 +108,7 @@
 
 						<div class="module">
 							<div class="module-head">
-								<h3>添加宿舍楼</h3>
+								<h3>添加用户</h3>
 							</div>
 							<div class="module-body">
 

@@ -88,7 +88,6 @@
 				<div class="span3">
 					<div class="sidebar">
 						  <#include "${sidebar}"/>
-
 					</div><!--/.sidebar-->
 				</div><!--/.span3-->
 
@@ -139,6 +138,9 @@
 	<!--<script src="https://cdn.bootcss.com/datatables/1.10.4/js/jquery.dataTables.min.js"></script>-->
 	<script src="../static/extension/DataTables-1.10.15/media/js/jquery.dataTables.min.js"></script>
 	
+	<!--引用时间格式化js文件-->
+	<script src="../static/DateUtil.js"></script>
+	
 	<script>
 		var table = $("#list").DataTable({
 			"lengthMenu": [10,20,30],  //自定义长度菜单的选项
@@ -153,12 +155,19 @@
                     "targets": -1,
                     "render": function ( data, type, full, meta ) {
                     	var array = new Array();
-                    	array.push('<a href="#">详情</a>');
-                    	array.push('<a href="#">删除</a>');
+                    	array.push('<a href="/hostel/building/'+full.buildingId+'/detail">详情</a>');
+                    	array.push('<a href="javascript:void(0);" onclick="remove(\''+data.buildingId+'\', \''+data.buildingName+'\');">删除</a>');
 				      	return array.join(" ");
 				    }
+                },
+				{
+            		//显示格式化的时间
+                	"targets": 5,
+                	"render": function ( data, type, full, meta ) {
+                		var date = new Date(data);
+	                	return date.getFullYear() + '-' + (date.getMonth() + 1) + '-' + date.getDate();
+				    }
                 }
-
             ],
 			"columns": [
 	            { "data": "buildingId", "visible": false, "orderable": false},
@@ -170,5 +179,31 @@
 	            { "data": null, "orderable": false}
 	        ]
 		});
+		
+		//删除宿舍楼
+		function remove(bId,bName) {
+			//alert(bId);
+			var r = confirm("确定删除'"+bName+"'?");
+			if(!r){
+				return ;
+			}
+			$.ajax({
+				url: "/hostel/building/delete",
+				dataType: "text",
+				type: "post",
+				async: false,
+				data: {
+					"bId": bId
+				},
+				success: function(result) {
+					alert(result);
+					//刷新数据
+					table.ajax.reload();
+				},
+				error: function() {
+					alert("error");
+				}
+			});
+		}
 	</script>
 </body>

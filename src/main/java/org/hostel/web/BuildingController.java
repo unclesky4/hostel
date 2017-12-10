@@ -9,6 +9,7 @@ import javax.servlet.http.HttpSession;
 
 import org.hostel.entity.Building;
 import org.hostel.entity.User;
+import org.hostel.exception.ValueDuplicateException;
 import org.hostel.service.BuildingService;
 import org.hostel.utils.SiderbarUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -73,11 +74,15 @@ public class BuildingController {
 		if(name==null || floors == null || rooms == null || lives == null) {
 			return "参数不匹配";
 		}
-		int count = buildingService.saveBuilding(name, floors, rooms, lives);
-		if(count > 0) {
-			return "保存成功";
+		try {
+			int count = buildingService.saveBuilding(name, floors, rooms, lives);
+			if(count > 0) {
+				return "保存成功";
+			}
+			return "保存失败";
+		} catch (ValueDuplicateException e) {
+			return e.getMessage();
 		}
-		return "保存失败";
 	}
 	
 	/**
@@ -121,23 +126,76 @@ public class BuildingController {
 	/**
 	 * 访问宿舍楼详细信息页面
 	 * @param session
-	 * @param buildingId
+	 * @param bId
 	 * @param model
 	 * @return
 	 */
 	@RequestMapping(value="/{buildingId}/detail",method=RequestMethod.GET)
-	public String queryById(HttpSession session, @PathVariable("buildingId")Integer buildingId, Model model) {
+	public String queryById(HttpSession session, @PathVariable("buildingId")Integer bId, Model model) {
 		User user = (User) session.getAttribute("user");
 		if(user == null) {
-			return "login";
+			return "redirect:/user/index";
 		}
-		Building building = buildingService.getById(buildingId);
-		model.addAttribute("data",building);
+		Building building = buildingService.getById(bId);
+		model.addAttribute("building",building);
+		SiderbarUtil.setSidebar(user, model);
 		//根据角色的不同返回不同的页面
 		if(user.getRole().getSymbol().equals("root") || user.getRole().getSymbol().equals("administrator")) {
 			return "building_detail";
 		}
-		return "404";
+		return "redirect:/common/404";
 	}
-
+	
+	/**
+	 * 删除宿舍楼
+	 * @param session
+	 * @param bId - 宿舍楼主键
+	 * @return
+	 */
+	@RequestMapping(value="/delete", method=RequestMethod.POST, produces={"application/text;charset=UTF-8"})
+	@ResponseBody
+	public String delete(HttpSession session, Integer bId) {
+		User user = (User) session.getAttribute("user");
+		if(user == null) {
+			return "请登陆";
+		}
+		if(!user.getRole().getSymbol().equals("root") && !user.getRole().getSymbol().equals("administrator")) {
+			return "没有权限";
+		}
+		try {
+			int count = buildingService.deleteBuilding(bId);
+			if(count < 1 ) {
+				return "删除失败";
+			}
+			return "删除成功";
+		} catch (RuntimeException e) {
+			return e.getMessage();
+		}
+	}
+	
+	/**
+	 * 更新宿舍楼
+	 * @param session
+	 * @param name - 宿舍楼名称 String
+	 * @param floors - 多少层 Integer
+	 * @param rooms - 每层多少间 Integer
+	 * @param lives - 每间住多少人 Integer
+	 * @return
+	 */
+	@RequestMapping(value="/{bId}/update", method=RequestMethod.POST, produces={"application/text;charset=UTF-8"})
+	@ResponseBody
+	public String update(HttpSession session, @PathVariable("bId")Integer bId, String name, Integer floors, Integer rooms, Integer lives) {
+		User user = (User) session.getAttribute("user");
+		if(user == null) {
+			return "请登陆";
+		}
+		if(!user.getRole().getSymbol().equals("root") && !user.getRole().getSymbol().equals("administrator")) {
+			return "没有权限";
+		}
+		int count = buildingService.updateBuilding(bId, name, floors, rooms, lives);
+		if(count < 1) {
+			return "更新失败";
+		}
+		return "更新成功";
+	}
 }

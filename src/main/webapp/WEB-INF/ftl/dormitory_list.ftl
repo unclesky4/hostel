@@ -13,15 +13,10 @@
 	<!--<link href="https://cdn.bootcss.com/datatables/1.10.4/css/jquery.dataTables.min.css" rel="stylesheet">-->
 	<link type="text/css" href='../static/extension/DataTables-1.10.15/media/css/jquery.dataTables.min.css' rel='stylesheet'>
 	<style>
-		/* dataTables列内容居中 */  
-		.table>tbody>tr>td{  
-		        text-align:center;  
-		}  
-		  
-		/* dataTables表头居中 */  
-		.table>thead:first-child>tr:first-child>th{  
-		        text-align:center;  
-		} 
+		table>tr>td{
+            height: 100%; width: 33.3%;
+            background-color: red;
+        }
 	</style>
 </head>
 <body>
@@ -132,6 +127,7 @@
 								            <th>主键</th>
 								            <th>宿舍门号</th>
 								            <th>已住人数</th>
+								            <th>操作</th>
 								        </tr>
 								        </thead>
 								        <tbody></tbody>
@@ -165,20 +161,22 @@
 			"serverSide": false,
 			"columnDefs": [
                 {
-                    "targets": -1,
+                    "targets": 3,
                     "render": function ( data, type, full, meta ) {
                     	var array = new Array();
                     	array.push('<a href="#">详情</a>');
                     	array.push('<a href="#">删除</a>');
+                    	array.push('<a href="#">入住学生信息</a>');
 				      	return array.join(" ");
 				    }
                 }
 
             ],
 			"columns": [
-	            { "data": "dormitoryId","orderable": false},
-	            { "data": "dormitoryNumber", "orderable": false},
-	            { "data": "totals", "orderable": false}
+	            { "data": "dormitoryId", "visible": false, "orderable": false},
+	            { "data": "dormitoryNumber", "orderable": false, "width": "30%" },
+	            { "data": "totals", "orderable": false ,"width": "30%" },
+	            { "orderable": false ,"width": "50%" }
 	        ]
 		});
 		
@@ -203,24 +201,47 @@
 				    },
 					"type": "post"
 				},
+				"columns": [
+		            { "data": "dormitoryId", "visible": false, "orderable": false},
+		            { "data": "dormitoryNumber", "orderable": false, "width": "30%" },
+		            { "data": "totals", "orderable": false ,"width": "30%" },
+		            { "orderable": false ,"width": "50%" }
+		        ],
 				"columnDefs": [
 	                {
-	                    "targets": -1,
+	                    "targets": 3,
 	                    "render": function ( data, type, full, meta ) {
+	                    	//alert(full.dormitoryId);
 	                    	var array = new Array();
-	                    	array.push('<a href="#">详情</a>');
-	                    	array.push('<a href="#">删除</a>');
+	                    	array.push('<a href="javascript:void(0);" onclick="jump(\''+full.dormitoryId+'\');">详情</a>');
+	                    	array.push('<a href="javascript:void(0);" onclick="remove(\''+full.dormitoryId+'\', \''+full.dormitoryNumber+'\')";>删除</a>');
+	                    	array.push('<a href="javascript:void(0);" onclick="goto(\''+full.dormitoryId+'\');">入住学生信息</a>');
 					      	return array.join(" ");
 					    }
 	                }
 	
-	            ],
-				"columns": [
-		            { "data": "dormitoryId","orderable": false},
-		            { "data": "dormitoryNumber", "orderable": false},
-		            { "data": "totals", "orderable": false}
-		        ]
-	        } );
+	            ]
+	        });
+		}
+		
+		//跳转到宿舍详情页
+		function jump(dId) {
+			window.location.href="/hostel/dormitory/"+dId+"/detail";
+		}
+		
+		//删除宿舍
+		function remove(dId, dNum) {
+			var r = confirm("确定删除该宿舍("+dNum+")");
+			if(!r) {
+				return;
+			}
+			var url = "/hostel/dormitory/"+dId+"/delete";
+			$.post(url, {}, function(result) {alert(result);},"text");
+		}
+		
+		//跳转到“已入住学生信息”页面
+		function goto(dId) {
+			window.location.href="/hostel/dormitory/"+dId+"/students";
 		}
 	</script>
 </body>

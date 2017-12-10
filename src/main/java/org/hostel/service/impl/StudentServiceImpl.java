@@ -41,6 +41,9 @@ public class StudentServiceImpl implements StudentService {
 			if(studentDao.getByStuNumber(stuNumber) != null) {
 				throw new RuntimeException("学号重复");
 			}
+			if (dormitory.getTotals() >= dormitory.getBuilding().getLives()) {
+				throw new RuntimeException("保存失败，该宿舍入住学生已满");
+			}
 			int count = studentDao.saveStudent(stuNumber, name, phone, sex, major, year, classNum, dormitoryId);
 			if(count < 1) {
 				return 0;
@@ -84,7 +87,11 @@ public class StudentServiceImpl implements StudentService {
 			return 0;
 		}
 		//更新宿舍已住人数失败
-		count = dormitoryDao.updateDormitory(dormitory.getDormitoryId(), null, (dormitory.getDormitoryNumber()-1), null);
+		int totals = dormitory.getTotals();
+		if(totals > 1) {
+			totals--;
+			count = dormitoryDao.updateDormitory(dormitory.getDormitoryId(), null, totals, null);
+		}
 		if(count < 1) {
 			throw new RuntimeException("删除失败");
 		}

@@ -183,7 +183,8 @@
 	            { "data": "sex", "orderable": false},
 	            { "data": "phone", "orderable": false},
 	            { "data": "major", "orderable": false},
-	            { "data": "year", "orderable": false}
+	            { "data": "year", "orderable": false},
+	            {"orderable": false, "width":"20%"}
 	        ]
 		});
 		
@@ -216,13 +217,13 @@
 	                    "targets": 7,
 	                    "render": function ( data, type, full, meta ) {
 	                    	var array = new Array();
-	                    	array.push('<a href="#">详情</a>');
-	                    	array.push('<a href="#">删除</a>');
+	                    	array.push('<a href="/hostel/student/'+full.stuId+'/detail">详情</a>');
+	                    	array.push('<a href="javascript:void(0);" onclick="remove(\''+full.stuId+'\')">删除</a>');
 					      	return array.join(" ");
 					    }
 	                },
 	                {
-	            		//显示性别 0-》男， 1-》女
+	            		//显示性别 0->男， 1->女
 	                	"targets": 3,
 	                	"render": function ( data, type, full, meta ) {
 		                	 if(data.sex == 0){return "男"}
@@ -232,14 +233,24 @@
 	            ],
 				"columns": [
 		            { "data": "stuId", "visible": false, "orderable": false},
-		            { "data": "stuNumber", "orderable": false},
+		            { "data": "stuNumber", "orderable": false, },
 		            { "data": "name", "orderable": false},
 		            { "data": "sex", "orderable": false},
 		            { "data": "phone", "orderable": false},
 		            { "data": "major", "orderable": false},
-		            { "data": "year", "orderable": false}
+		            { "data": "year", "orderable": false},
+		            {"orderable": false, "width":"20%"}
 		        ]
 	        } );
+		}
+		//删除
+		function remove(stuId) {
+			var r = confirm("确定删除?");
+			if(!r) {
+				return;
+			}
+			var url = "/hostel/student/delete";
+			$.post(url, {"stuId":stuId}, function(result) {alert(result);},"text");
 		}
 	</script>
 </body>
