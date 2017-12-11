@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.hostel.dao.DormitoryDao;
 import org.hostel.dao.StudentDao;
+import org.hostel.entity.Building;
 import org.hostel.entity.Dormitory;
 import org.hostel.entity.Student;
 import org.hostel.exception.ObjectNotExistsException;
@@ -66,7 +67,58 @@ public class StudentServiceImpl implements StudentService {
 	@Override
 	@Transactional
 	public int updateStudent(Long stuId, Integer stuNumber, String name, String phone, Integer sex, String major,
-			Integer year, Integer classNum, Integer dormitoryId) {
+			Integer year, Integer classNum, Integer dormitoryId) throws ObjectNotExistsException, RuntimeException{
+		Student student = studentDao.getById(stuId);
+		if(student == null) {
+			throw new ObjectNotExistsException("学生对象不存在");
+		}
+		if(student.getDormitory() == null) {
+			throw new ObjectNotExistsException("关联的宿舍对象不存在");
+		}
+		//判断是否要更新学生的宿舍外键
+		if(dormitoryId != null) {
+			if(dormitoryId == student.getDormitory().getDormitoryId()) {
+				//更新的宿舍外键与原来的一样
+				return studentDao.updateStudent(stuId, stuNumber, name, phone, sex, major, year, classNum, dormitoryId);
+			}else {
+				Dormitory dormitory = dormitoryDao.getById(student.getDormitory().getDormitoryId());
+				if(dormitory.getBuilding() == null) {
+					throw new ObjectNotExistsException("关联的宿舍楼对象不存在");
+				}
+				Dormitory new_dormitory = dormitoryDao.getById(dormitoryId);
+				if(new_dormitory == null) {
+					throw new RuntimeException("宿舍对象不存在");
+				}
+				Building building = dormitoryDao.getById(dormitoryId).getBuilding();
+				if(building == null) {
+					throw new RuntimeException("操作失败");
+				}
+				//判断宿舍是否已满人
+				if(new_dormitory.getTotals() >= building.getLives()) {
+					throw new RuntimeException("宿舍人数已满");
+				}
+				int count = studentDao.updateStudent(stuId, stuNumber, name, phone, sex, major, year, classNum, dormitoryId);
+				if(count < 1) {
+					return 0;
+				}
+				//原来的宿舍已住人数减一
+				int totals = student.getDormitory().getTotals();
+				if(totals > 0 ) {
+					totals--;
+					if(dormitoryDao.updateDormitory(dormitoryId, null, totals, null) < 1) {
+						throw new RuntimeException("更新失败");
+					}
+				}
+				//新入住的宿舍已住人数加一
+				totals = new_dormitory.getTotals();
+				totals++;
+				if(dormitoryDao.updateDormitory(dormitoryId, null, totals, null) < 1) {
+					throw new RuntimeException("更新失败");
+				}
+				return 1;
+			}
+		}
+		//不更新宿舍外键
 		return studentDao.updateStudent(stuId, stuNumber, name, phone, sex, major, year, classNum, dormitoryId);
 	}
 

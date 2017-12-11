@@ -105,7 +105,7 @@
 									<div class="control-group">
 										<label class="control-label" for="basicinput">宿舍楼</label>
 										<div class="controls">
-											<div class="building_dropdown dropdown-simple">
+											<div class="building_dropdown dropdown-simple" style="width:65%;">
 											   <!-- PS: select标签需手动设置隐藏 -->
 												<select style="display:none" id="bId">
 												    <option value=" "></option>
@@ -120,7 +120,7 @@
 									<div class="control-group">
 										<label class="control-label" for="basicinput">宿舍门号</label>
 										<div class="controls">
-											<div class="dormitory_dropdown dropdown-simple">
+											<div class="dormitory_dropdown dropdown-simple" style="width:65%;">
 											   <!-- PS: select标签需手动设置隐藏 -->
 												<select style="display:none" id="dId">
 												    <!--<option value="1">1</option>-->
@@ -147,6 +147,7 @@
 										<label class="control-label" for="basicinput">学生性别</label>
 										<div class="controls">
 											<select class="span8" id="sex">
+												<option value=""></option>
 												<option value="0">男</option>
 												<option value="1">女</option>
 											</select>
@@ -282,6 +283,10 @@
 			var classNum = $.trim($("#class_num").val());
 			var year = $("#year").val();
 			
+			if(dId == "") {
+				alert("请选择宿舍门号");
+				return;
+			}
 			var z = /^\d+$/;
 			if(!z.test(number)) {
 				alert("学号为正整数");
@@ -295,6 +300,10 @@
 			var z1 = /^1[3|4|5|7|8][0-9]{9}$/;
 			if(!z1.test(phone)) {
 				alert("手机格式不正确");
+				return;
+			}
+			if(sex == "") {
+				alert("请选择性别");
 				return;
 			}
 			if(major == "" || major.length > 20) {

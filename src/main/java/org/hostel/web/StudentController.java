@@ -8,10 +8,12 @@ import java.util.Map;
 import javax.servlet.http.HttpSession;
 
 import org.hostel.entity.Building;
+import org.hostel.entity.Dormitory;
 import org.hostel.entity.Student;
 import org.hostel.entity.User;
 import org.hostel.exception.ObjectNotExistsException;
 import org.hostel.service.BuildingService;
+import org.hostel.service.DormitoryService;
 import org.hostel.service.StudentService;
 import org.hostel.utils.DateUtil;
 import org.hostel.utils.SiderbarUtil;
@@ -38,6 +40,9 @@ public class StudentController {
 	
 	@Autowired
 	private BuildingService buildingService;
+	
+	@Autowired
+	private DormitoryService dormitoryService;
 	/**
 	 * 跳转到添加学生功能的界面
 	 * @param session
@@ -168,7 +173,24 @@ public class StudentController {
 		model.addAttribute("student", student);
 		List<Building> buildings = buildingService.queryAllBuilding();
 		model.addAttribute("buildings", buildings);
+		Dormitory dormitory = dormitoryService.getById(student.getDormitory().getDormitoryId());
+		Building building = buildingService.getById(dormitory.getBuilding().getBuildingId());
+		if(building != null) {
+			model.addAttribute("building", building);
+		}
 		SiderbarUtil.setSidebar(user, model);
+		//用于入学年份列表
+		int year = DateUtil.getCurrentYear();
+		List<Integer> years = new ArrayList<Integer>();
+		years.add(year-5);
+		years.add(year-4);
+		years.add(year-3);
+		years.add(year-2);
+		years.add(year-1);
+		years.add(year);
+		years.add(year+1);
+		years.add(year+2);
+		model.addAttribute("years", years);
 		
 		if(!user.getRole().getSymbol().equals("root") && !user.getRole().getSymbol().equals("administrator")) {
 			return "studentDetail";
@@ -206,10 +228,12 @@ public class StudentController {
 			if(count > 0) {
 				return "更新成功";
 			}
-		} catch (Exception e) {
-			e.printStackTrace();
+			return "更新失败";
+		} catch (ObjectNotExistsException e) {
+			return e.getLocalizedMessage();
+		}	catch (RuntimeException e1) {
+			return e1.getLocalizedMessage();
 		}
-		return "更新失败";
 	}
 	
 	/**
