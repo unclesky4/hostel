@@ -33,7 +33,7 @@
 			<if test="userSex != null">user_sex=#{userSex},</if>
 			<if test="userPhone != null">user_phone=#{userPhone},</if>
 			<if test="userState != null">user_state=#{userState},</if>
-			<if test="roleId != null">role_id=#{role_id}</if>
+			<if test="roleId != null">role_id=#{roleId}</if>
 		</set> 
 		where user_id=#{userId} and active=true
 	</update>

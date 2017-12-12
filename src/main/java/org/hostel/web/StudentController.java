@@ -130,6 +130,10 @@ public class StudentController {
 			return "login";
 		}
 		SiderbarUtil.setSidebar(user, model);
+		//根据角色跳转页面
+		if(!user.getRole().getSymbol().equals("root") && !user.getRole().getSymbol().equals("administrator")) {
+			return "studentQuery";
+		}
 		return "student_query";
 	}
 	
@@ -251,6 +255,9 @@ public class StudentController {
 		SiderbarUtil.setSidebar(user, model);
 		List<Building> buildings = buildingService.queryAllBuilding();
 		model.addAttribute("buildings", buildings);
+		if(!user.getRole().getSymbol().equals("root") && !user.getRole().getSymbol().equals("administrator")) {
+			return "studentList";
+		}
 		return "student_list";
 	}
 	

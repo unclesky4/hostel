@@ -63,6 +63,7 @@
   			B.lives,
   			B.create_time,
   			B.active as building_active,
+  			S.stu_id,
   			S.stu_number,
   			S.name,
   			S.sex,

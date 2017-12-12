@@ -5,10 +5,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 import org.hostel.dto.Result;
+import org.hostel.entity.Role;
 import org.hostel.entity.User;
 import org.hostel.enums.RoleEnum;
 import org.hostel.exception.ValueDuplicateException;
@@ -105,7 +105,7 @@ public class UserController {
 	}
 	
 	/**
-	 * 更新用户信息
+	 * 更新其他用户信息 -- root角色
 	 * @param session
 	 * @param userId - 用户主键，修改自己登陆的账号时不用传
 	 * @param userPwd
@@ -120,40 +120,25 @@ public class UserController {
 	public String updateUser(HttpSession session, @PathVariable("userId")Integer userId, String userPwd, Short userSex, String userPhone,
 			Short userState, Integer roleId) {
 		User tmp = (User) session.getAttribute("user");
-		if(userId == null) {
+		if(tmp == null) {
 			return "请登陆";
 		}
-		if(userSex != 0 && userSex != 1 && userSex != null) {
+		if(userId == null) {
+			return "参数错误";
+		}
+		if(!tmp.getRole().getSymbol().equals("root")) {
+			return "没有权限";
+		}
+		if(userState != null && userState != 0 && userState != 1 && userState != -1) {
 			return "存在非法的值";
 		}
 		Integer count = 0;
 		//root角色可以修改其他用户的信息，包括密码，状态，角色
-		if(tmp.getRole().getSymbol().equals("root") && userId != null) {
-			if(userState != 0 && userState != 1 && userState != -1) {
-				return "存在非法的值";
-			}
-			try {
-				count = userService.updateUser(userId, null, userPwd, userSex, userPhone, userState, roleId);
-				if(count > 0) {
-					User user = userService.getUserById(userId);
-					if(user != null) {
-						session.setAttribute("user", user);
-					}
-					return "更新成功";
-				}else{
-					return "更新失败";
-				}
-			} catch (RuntimeException e) {
-				e.printStackTrace();
-				return "操作失败"; 
-			}
-		}
-		//如果不是root角色，取登陆用户的主键
 		try {
-			count = userService.updateUser(tmp.getUserId(), null, null, userSex, userPhone, null, null);
+			count = userService.updateUser(userId, null, userPwd, userSex, userPhone, userState, roleId);
 			if(count > 0) {
 				User user = userService.getUserById(userId);
-				if(user != null) {
+				if(user != null && user.getUserId() == tmp.getUserId()) {
 					session.setAttribute("user", user);
 				}
 				return "更新成功";
@@ -161,9 +146,31 @@ public class UserController {
 				return "更新失败";
 			}
 		} catch (RuntimeException e) {
-			e.printStackTrace();
-			return "操作失败"; 
+			return e.getMessage(); 
 		}
+	}
+	
+	/**
+	 * 删除用户
+	 * @param session
+	 * @param userId - 用户主键
+	 * @return
+	 */
+	@RequestMapping(value="/{userId}/delete", method = RequestMethod.POST, produces = {"application/text;charset=UTF-8" })
+	@ResponseBody
+	public String delete(HttpSession session, Integer userId) {
+		User user = (User) session.getAttribute("user");
+		if(user == null) {
+			return "请登陆";
+		}
+		if(!user.getRole().getSymbol().equals("root")) {
+			return "没有权限";
+		}
+		int count = userService.deleteUser(userId);
+		if(count < 1) {
+			return "删除失败";
+		}
+		return "删除成功";
 	}
 	
 	/**
@@ -218,30 +225,47 @@ public class UserController {
 	}
 	
 	/**
-	 * 显示某个用户的信息
-	 * @param request
-	 * @param userId
+	 * 显示某个用户的信息 - root角色
+	 * @param model
+	 * @param userId - 用户主键
 	 * @param session
 	 * @return
 	 */
 	@RequestMapping(value="/{userId}/detail", method = RequestMethod.GET)
-	public String getUserById(HttpServletRequest request, @PathVariable("userId")Integer userId, HttpSession session) {
-		User user = null;
-		if(userId == null) {
-			user = (User) session.getAttribute("user");
-		}else {
-			user = userService.getUserById(userId);
+	public String getUserById(Model model, @PathVariable("userId")Integer userId, HttpSession session) {
+		User tmp = (User) session.getAttribute("user");
+		if (tmp == null) {
+			return "redirect:/user/index";
 		}
-		if (user == null) {
-			return "login";
+		if(!tmp.getRole().getSymbol().equals("root")) {
+			return "redirect:/common/404";
 		}
-		request.setAttribute("userId", user.getUserId());
-		request.setAttribute("userName", user.getUserName());
-		request.setAttribute("userPhone", user.getUserPhone());
-		request.setAttribute("userSex", user.getUserSex());
-		request.setAttribute("userState", user.getUserState());
-		request.setAttribute("createTime", user.getCreateTime());
-		request.setAttribute("roleName", RoleEnum.getBySymbol(user.getRole().getSymbol()).getRoleName());
+		User user = userService.getUserById(userId);
+		model.addAttribute("userId", user.getUserId());
+		model.addAttribute("userName", user.getUserName());
+		model.addAttribute("userPhone", user.getUserPhone());
+		model.addAttribute("userSex", user.getUserSex());
+		String state = "";
+		switch (user.getUserState()) {
+		case 0:
+			state = "待审核";
+			break;
+		case 1:
+			state = "已通过审核";
+			break;
+		case -1:
+			state = "未通过审核";
+			break;
+		default:
+			state = "未通过审核";
+			break;
+		}
+		model.addAttribute("userState", state);
+		model.addAttribute("createTime", user.getCreateTime());
+		model.addAttribute("roleId", user.getRole().getRoleId());
+		SiderbarUtil.setSidebar(tmp, model);
+		List<Role> roles = roleService.queryAllRole();
+		model.addAttribute("roles", roles);
 		return "user_detail";
 	}
 	
@@ -261,6 +285,7 @@ public class UserController {
 			return "404";
 		}
 		SiderbarUtil.setSidebar(user, model);
+		model.addAttribute("userId", user.getUserId());
 		return "user_list";
 	}
 	

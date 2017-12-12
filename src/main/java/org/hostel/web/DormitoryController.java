@@ -100,17 +100,14 @@ public class DormitoryController {
 		if(user == null) {
 			return "login";
 		}
-		if(!user.getRole().getSymbol().equals("root") && !user.getRole().getSymbol().equals("administrator")) {
-			return "404";
-		}
 		SiderbarUtil.setSidebar(user, model);
 		List<Building> buildings = buildingService.queryAllBuilding();
 		model.addAttribute("buildings", buildings);
 		//根据角色跳转页面
-		if(user.getRole().getSymbol().equals("root") || user.getRole().getSymbol().equals("administrator")) {
-			return "dormitory_list";
+		if(!user.getRole().getSymbol().equals("root") && !user.getRole().getSymbol().equals("administrator")) {
+			return "dormitoryList";
 		}
-		return "dormitoryList";
+		return "dormitory_list";
 	}
 	
 	/**
@@ -179,9 +176,12 @@ public class DormitoryController {
 			return "redirect:/user/index";
 		}
 		Dormitory dormitory = dormitoryService.getById(dId);
-		model.addAttribute("data", dormitory);
+		model.addAttribute("dormitory", dormitory);
 		SiderbarUtil.setSidebar(user, model);
-		return "dormitory_students";
+		if(!user.getRole().getSymbol().equals("root") && !user.getRole().getSymbol().equals("administrator")) {
+			return "dormitoryStu";
+		}
+		return "dormitory_stu";
 	}
 	
 	/**

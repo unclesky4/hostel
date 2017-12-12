@@ -45,7 +45,7 @@ public interface UserDao {
 	 * @param userId
 	 * @return
 	 */
-	int deleteUser(Integer userId);
+	int deleteUser(@Param("userId")Integer userId);
 	
 	/**
 	 * 通过主键查询用户

@@ -13,6 +13,9 @@ import org.springframework.ui.Model;
 public class SiderbarUtil {
 	
 	public static Model setSidebar(User user, Model model) {
+		//传用户名
+		model.addAttribute("NAME", user.getUserName());
+		
 		if(user.getRole().getSymbol().equals("root")) {
 			model.addAttribute("sidebar", "/base/sidebar_root.ftl");
 			return model;

@@ -39,6 +39,13 @@ public interface UserService {
 			Short userState, Integer roleId);
 	
 	/**
+	 * 删除用户 - 软删除
+	 * @param userId
+	 * @return
+	 */
+	int deleteUser(Integer userId);
+	
+	/**
 	 * 通过主键查询用户
 	 * @param userId
 	 * @return

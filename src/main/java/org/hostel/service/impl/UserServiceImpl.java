@@ -58,11 +58,24 @@ public class UserServiceImpl implements UserService {
 			if( userPwd!=null && userPwd != "") {
 				userPwd = MD5Util.Encrypt(userPwd);
 			}
+			if (userName != "" || userName != null) {
+				User user = userDaoMapper.getByName(userName);
+				if (user != null && user.getUserId() != userId) {
+					throw new RuntimeException("用户名已存在");
+				}
+			}
 			return userDaoMapper.updateUser(userId, userName, userPwd, userSex, userPhone, userState, roleId);
-		} catch (Exception e) {
-			e.printStackTrace();
-			throw new RuntimeException(e.getMessage());
+		} catch (RuntimeException e1) {
+			throw e1;
+		} catch (Exception e2) {
+			throw new RuntimeException("操作失败");
 		}
+	}
+	
+
+	@Override
+	public int deleteUser(Integer userId) {
+		return userDaoMapper.deleteUser(userId);
 	}
 
 	@Override

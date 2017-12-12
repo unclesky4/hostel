@@ -22,48 +22,18 @@
 					<i class="icon-reorder shaded"></i>
 				</a>
 
-			  	<a class="brand" href="index.html">
+			  	<a class="brand" href="javascript:void(0);">
 			  		HOSTEL
 			  	</a>
 
 				<div class="nav-collapse collapse navbar-inverse-collapse">
-					<ul class="nav nav-icons">
-						<li class="active"><a href="javascript:void(0);">
-							<i class="icon-envelope"></i>
-						</a></li>
-						<li><a href="#">
-							<i class="icon-eye-open"></i>
-						</a></li>
-						<li><a href="#">
-							<i class="icon-bar-chart"></i>
-						</a></li>
-					</ul>
-
-					<form class="navbar-search pull-left input-append" action="#">
-						<input type="text" class="span3">
-						<button class="btn" type="button">
-							<i class="icon-search"></i>
-						</button>
-					</form>
 				
 					<ul class="nav pull-right">
-						<li class="dropdown">
-							<a href="#" class="dropdown-toggle" data-toggle="dropdown">Dropdown <b class="caret"></b></a>
-							<ul class="dropdown-menu">
-								<li><a href="#">Item No. 1</a></li>
-								
-								<li><a href="#">Don't Click</a></li>
-								<li class="divider"></li>
-								<li class="nav-header">Example Header</li>
-								<li><a href="#">A Separated link</a></li>
-							</ul>
-						</li>
-						
-						<li><a href="#">
-							Support
+						<li><a href="javascript:void(0);">
+							${NAME}
 						</a></li>
 						<li class="nav-user dropdown">
-							<a href="#" class="dropdown-toggle" data-toggle="dropdown">
+							<a href="javascript:void(0);" class="dropdown-toggle" data-toggle="dropdown">
 								<img src="../static/images/user.png" class="nav-avatar" />
 								<b class="caret"></b>
 							</a>
@@ -110,6 +80,7 @@
 							            <th>联系电话</th>
 							            <th>用户状态</th>
 							            <th>创建时间</th>
+							            <th>角色</th>
 							            <th>操作</th>
 							        </tr>
 							        </thead>
@@ -139,6 +110,8 @@
 	<script src="../static/extension/DataTables-1.10.15/media/js/jquery.dataTables.min.js"></script>
 	<!--时间格式化-->
 	<script src="../static/DateUtil.js"></script>
+	<!--layer-->
+	<script src="../static/extension/layer-v3.1.1/layer/layer.js" type="text/javascript"></script>
 	
 	<script>
 		var table = $("#list").DataTable({
@@ -151,12 +124,14 @@
 			},
 			"columnDefs": [
                 {
-                    "targets": 6,
+                    "targets": 7,
                     "render": function ( data, type, full, meta ) {
                     	var array = new Array();
-                    	array.push('<a href="#">详情</a>');
-                    	array.push('<a href="#">删除</a>');
-                    	array.push('<a href="#">审核</a>');
+                    	if(full.userId != ${userId}) {
+                    		array.push('<a href="/hostel/user/'+full.userId+'/detail">详情</a>');
+                        	array.push('<a href="javascript:void(0);" onclick="remove(\''+full.userId+'\')">删除</a>');
+                        	array.push('<a href="javascript:void(0);" onclick="verify(\''+full.userId+'\')">审核</a>');
+                    	}
 				      	return array.join(" ");
 				    }
                 },
@@ -188,6 +163,31 @@
                 		var date = new Date(full.createTime);
 	                	return dateFtt("yyyy-MM-dd",date);
 				    }
+                },
+                {
+            		//显示角色
+                	"targets": 6,
+                	"data": function (row, type, val, meta) {
+                		var tmp = "";
+                		$.each(row.role, function(k, v) {
+                			if(k == "symbol") {
+                				switch(v) {
+	                				case "root":
+	                					tmp = "超级管理员";
+	                					break;
+	                				case "administrator":
+	                					tmp = "管理员";
+	                					break;
+	                				case "guest":
+	                					tmp = "来宾";
+	                					break;
+	                				default: ;
+                				}
+                				return false;
+                			}
+                		})
+	                	return tmp;
+				    }
                 }
             ],
 			"columns": [
@@ -197,9 +197,66 @@
 	            { "data": "userPhone", "orderable": false},
 	            { "data": "userState", "orderable": true},
 	            { "data": "createTime", "orderable": true},
+	            { "orderable": true},
 	            { "orderable": false, "searchable": false}
 	        ]
 		});
+		
+		//审核
+		function verify(userId) {
+			layer.open({
+			  type: 1,
+			  title: "审核用户状态",
+			  skin: 'layui-layer-rim', //加上边框
+			  area: ['420px', '240px'], //宽高
+			  content: '<form class="form-horizontal row-fluid" style="padding-top:40px;">'+
+			  		'<div class="control-group">'+
+						'<label class="control-label" for="basicinput">审核状态</label>'+
+						'<div class="controls">'+
+							'<select class="span8" id="user_state">'+
+								'<option value=""></option>'+
+								'<option value="1">审核通过</option>'+
+								'<option value="-1">审核不通过</option>'+
+							'</select>'+
+						'</div>'+
+					'</div><br/><br/>'+
+					'<div class="control-group">'+
+						'<div class="controls" style="margin-left:190px;">'+
+							'<button type="button" class="btn btn-primary" onclick="update(\''+userId+'\');">确 定</button>'+
+						'</div>'+
+					'</div>'+
+			  	'</form>'
+			});
+		}
+		
+		//删除用户
+		function remove(userId) {
+			var r = confirm("确定删除该用户?");
+			if(!r) {
+				return;
+			}
+			var url = "/hostel/user/"+userId+"/delete";
+			$.post(url, {"userId": userId}, function(result) {alert(result);},"text");
+		}
+		
+		//更新用户审核状态
+		function update(userId) {
+			
+			//关闭最新弹出的层
+			layer.close(layer.index);
+			//alert(userId+"  "+userState);
+			if(userId == "") {
+				alert("参数错误");
+				return ;
+			}
+			var userState = $("#user_state").val();
+			if(userState == "") {
+				alert("请选择审核状态");
+				return ;
+			}
+			var url = "/hostel/user/"+userId+"/update";
+			$.post(url, {"userId": userId, "userState":userState}, function(result) {alert(result);},"text");
+		}
 		
 	</script>
 </body>

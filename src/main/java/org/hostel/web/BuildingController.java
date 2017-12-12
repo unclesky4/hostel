@@ -97,10 +97,10 @@ public class BuildingController {
 		if(user == null) {
 			return "login";
 		}
-		if(!user.getRole().getSymbol().equals("root") && !user.getRole().getSymbol().equals("administrator")) {
-			return "404";
-		}
 		SiderbarUtil.setSidebar(user, model);
+		if(!user.getRole().getSymbol().equals("root") && !user.getRole().getSymbol().equals("administrator")) {
+			return "buildingList";
+		}
 		return "building_list";
 	}
 	

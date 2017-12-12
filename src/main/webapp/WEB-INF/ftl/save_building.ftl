@@ -33,48 +33,19 @@
 					<i class="icon-reorder shaded"></i>
 				</a>
 
-			  	<a class="brand" href="index.html">
+			  	<a class="brand" href="javascript:void(0);">
 			  		HOSTEL
 			  	</a>
 
 				<div class="nav-collapse collapse navbar-inverse-collapse">
-					<ul class="nav nav-icons">
-						<li class="active"><a href="javascript:void(0);">
-							<i class="icon-envelope"></i>
-						</a></li>
-						<li><a href="#">
-							<i class="icon-eye-open"></i>
-						</a></li>
-						<li><a href="#">
-							<i class="icon-bar-chart"></i>
-						</a></li>
-					</ul>
-
-					<form class="navbar-search pull-left input-append" action="#">
-						<input type="text" class="span3">
-						<button class="btn" type="button">
-							<i class="icon-search"></i>
-						</button>
-					</form>
 				
 					<ul class="nav pull-right">
-						<li class="dropdown">
-							<a href="#" class="dropdown-toggle" data-toggle="dropdown">Dropdown <b class="caret"></b></a>
-							<ul class="dropdown-menu">
-								<li><a href="#">Item No. 1</a></li>
-								
-								<li><a href="#">Don't Click</a></li>
-								<li class="divider"></li>
-								<li class="nav-header">Example Header</li>
-								<li><a href="#">A Separated link</a></li>
-							</ul>
-						</li>
 						
-						<li><a href="#">
-							Support
+						<li><a href="javascript:void(0);">
+							${NAME}
 						</a></li>
 						<li class="nav-user dropdown">
-							<a href="#" class="dropdown-toggle" data-toggle="dropdown">
+							<a href="javascript:void(0);" class="dropdown-toggle" data-toggle="dropdown">
 								<img src="../static/images/user.png" class="nav-avatar" />
 								<b class="caret"></b>
 							</a>
@@ -99,7 +70,6 @@
 				<div class="span3">
 					<div class="sidebar">
 						  <#include "${sidebar}"/>
-
 					</div><!--/.sidebar-->
 				</div><!--/.span3-->
 
@@ -114,32 +84,31 @@
 							<div class="module-body">
 
 								<form class="form-horizontal row-fluid">
-
 									<div class="control-group">
 										<label class="control-label" for="basicinput">宿舍楼名称</label>
 										<div class="controls">
-											<input type="text" id="building_name" placeholder="长度须小于10">
+											<input type="text" id="building_name" class="span8" placeholder="长度须小于10" >
 										</div>
 									</div>
 									<br/><br/>
 									<div class="control-group">
 										<label class="control-label" for="basicinput">层数</label>
 										<div class="controls">
-											<input id="floors"/>
+											<input type="text" id="floors" class="span8" placeholder="请输入正整数">
 										</div>
 									</div>
 									<br/><br/>
 									<div class="control-group">
 										<label class="control-label" for="basicinput">每层宿舍间数</label>
 										<div class="controls">
-											<input id="rooms"/>
+											<input type="text" id="rooms" class="span8" placeholder="请输入正整数">
 										</div>
 									</div>
 									<br/><br/>
 									<div class="control-group">
 										<label class="control-label" for="basicinput">每间可住人数</label>
 										<div class="controls">
-											<input id="lives"/>
+											<input type="text" id="lives" class="span8" placeholder="请输入正整数">
 										</div>
 									</div>
 									<br/><br/>
@@ -163,31 +132,23 @@
 		</div>
 	</div>
 
-	<script src="../static/jquery-3.0.0.min.js" type="text/javascript"></script>
+	<script src="../static/scripts/jquery-1.9.1.min.js" type="text/javascript"></script>
 	<script src="../static/scripts/jquery-ui-1.10.1.custom.min.js" type="text/javascript"></script>
 	<script src="../static/bootstrap/js/bootstrap.min.js" type="text/javascript"></script>
 	<script src="../static/scripts/flot/jquery.flot.js" type="text/javascript"></script>
 	<script src="../static/jquery-mousewheel/jquery.mousewheel.min.js" type="text/javascript"></script>
 	<script>
-		var floors_spinner = $( "#floors" ).spinner({
-			max: 20,
-			min: 2,
-		});
-		var rooms_spinner = $( "#rooms" ).spinner({
-			max: 20,
-			min: 2
-		});
-		var lives_spinner = $( "#lives" ).spinner({
-			max: 20,
-			min: 2
-		});
 		//保存
 		function save() {
+			var r = confirm("确定保存?");
+			if(!r) {
+				return;
+			}
 			//alert(floors_spinner.spinner( "value" ));
 			var name = $.trim($("#building_name").val());
-			var floors = floors_spinner.spinner( "value" );
-			var rooms = rooms_spinner.spinner( "value" );
-			var lives = lives_spinner.spinner( "value" );
+			var floors = $.trim($("#floors").val());
+			var rooms = $.trim($("#rooms").val());
+			var lives = $.trim($("#lives").val());
 			if(name == "") {
 				alert("宿舍楼名称不能为空");
 				return ;
@@ -198,7 +159,7 @@
 			}
 			var z = /^\d+$/;
 			if(!z.test(floors) || !z.test(rooms) || !z.test(lives)) {
-				alert("层数，间数，可住人数必须为整数");
+				alert("层数，间数，可住人数必须为正整数");
 				return ;
 			}
 			$.ajax({
